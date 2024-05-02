@@ -12,6 +12,6 @@ export def "gen color" []: bool -> string {
 }
 
 export def "run" [--quiet (-q)]: string -> nothing {
-    let out = run-external --redirect-stdout "pwsh" "-c" $in
-    if ($quiet) { null } else { $out }
+    let out = run-external "pwsh" "-c" $in
+    if ($quiet) { null } else { print $out }
 }

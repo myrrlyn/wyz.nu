@@ -3,6 +3,9 @@ use std log
 use utils.nu ["or-else"]
 use sys.nu ["geoip"]
 use pwsh.nu
+use term.nu
+use theme.nu
+use vscode.nu
 
 const szgic = {
     lat:  43.00701389364397
@@ -10,8 +13,12 @@ const szgic = {
     tzid: "America/Chicago"
 }
 
-export def "set" [--work (-w), --theme (-t): string, location?: record<lat: number, lng: number, tzid: string>] {
-    if ($theme == "light") {
+export def --env "set" [
+    --work (-w),
+    --theme (-t): string,
+    location?: record<lat: number, lng: number, tzid: string>,
+] {
+    let t: bool = if ($theme == "light") {
         true
     } else if ($theme == "dark") {
         false
@@ -27,10 +34,16 @@ export def "set" [--work (-w), --theme (-t): string, location?: record<lat: numb
             | rename lat lng tzid
             )
         } | daytime
-    } | do {
-        log info $"Setting system theme to (if ($in) { "light" } else { "dark" })"
-        $in
-    } | pwsh gen color | pwsh run -q
+    }
+    let n = if ($t) { "light" } else { "dark" }
+    log info $"Setting system theme to ($n)"
+    $t | pwsh gen color | pwsh run -q
+    log info $"Setting nu theme to ($n)"
+    $env.config.color_config = ($t | theme update-builtin)
+    if (($nu).os-info.name == "windows") {
+        $t | term windows theme
+    }
+    vscode rainglow -t $t
     log info "Done"
 }
 
@@ -58,7 +71,7 @@ export def "twilights" [
     )
 }
 
-export def "daytime" [time?: datetime]: [record<lat: number, lng: number, tzid: string> -> bool, nothing -> bool] {
+export def "daytime" [time?: datetime] {
     let loc = $in | or-else { $szgic }
     let time = $time | or-else { date now }
     let events = (
