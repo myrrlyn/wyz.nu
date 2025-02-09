@@ -3,7 +3,7 @@ use std log
 use utils.nu ["or-else"]
 use sys.nu ["geoip"]
 use pwsh.nu
-use term.nu
+use term
 use theme.nu
 use vscode.nu
 
@@ -43,7 +43,7 @@ export def --env "set" [
     if (($nu).os-info.name == "windows") {
         $t | term windows theme
     }
-    vscode rainglow -t $t
+    vscode rainglow -t $theme
     log info "Done"
 }
 

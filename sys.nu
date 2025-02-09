@@ -19,7 +19,7 @@ export def "geoip" [ip?: string] {
         Sec-Fetch-Mode: cors
         Sec-Fetch-Site: "same-site"
         TE: trailers
-        UserAgen: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0"
+        UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0"
     } | transpose key value | each { [$in.key, $in.value] } | flatten
     http get -H $hdrs $"https://api.ipgeolocation.io/ipgeo?=($ip)"
 }

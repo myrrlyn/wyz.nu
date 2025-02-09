@@ -18,6 +18,15 @@ export def or-else [block: closure]: any -> any {
     }
 }
 
+export def rand []: [list -> any, table -> record] {
+    let inp = $in
+    if ($inp | is-not-empty) {
+        $inp | shuffle | first
+    } else {
+        nothing
+    }
+}
+
 export def try-rename [from: string, to: string]: [record -> record, table -> table] {
     $in | if ($in | has-column $from) {
         rename { $from: $to }
